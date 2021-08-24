@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>List thing</h1>
+    <form name="selectById">
+        <select name="ID"></select>
+    </form>
+    <div id="content">
+
+    </div>
+    <script>
+        var isLoadList = false;
+        document.forms[name = 'selectById'][name = 'ID'].onchange = function () {
+            loadData(this.value);
+        }
+        function loadData(id) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange =  function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var doc = this.responseXML;
+                    var arrayThing = doc.getElementsByTagName('Thing');
+                    var content = `<ul>`;
+                    var selectOption = `<option value=0>All</option>`;
+                    for (let i = 0; i < arrayThing.length; i++) {
+                        const element = arrayThing[i];
+                        content +=
+                            `<li>${element.getElementsByTagName('ID')[0].textContent}
+                                 ${element.getElementsByTagName('Description') [0].textContent}</li>`;
+                        selectOption += `<option value='${element.getElementsByTagName('ID') [0].textContent}'>
+                                    ${element.getElementsByTagName('ID') [0].textContent}
+                                    </option>`;
+                    }
+                    content += '</ul>';
+                    //Đảm bảo load danh sách lần đầu.
+                    if (!isLoadList) {
+                        document.forms[name = 'selectById'] [name = 'ID'].innerHTML = selectOption;
+                        isLoadList = true;
+                    }
+                    document.getElementById('content').innerHTML = content;
+                }
+            };
+            var requestUrl = 'http://localhost:8080/serve/get-list.php';
+            if (id && id.length > 0 && id != '0') {
+                requestUrl += '?ID=' + id;
+            }
+            xhr.open('GET', requestUrl, false);
+            xhr.send();
+        }
+        loadData();
+    </script>
+</body>
+</html>
